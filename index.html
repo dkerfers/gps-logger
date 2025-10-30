@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Log GPS</title>
+</head>
+<body>
+<h2>📍 Enregistrement de position GPS</h2>
+<p id="status">Récupération de la position en cours...</p>
+
+<script>
+const scriptURL = "https://script.google.com/u/0/home/projects/10RQcnSJ5rkEx6aV4qPRQ2hqeCRGLJxOFcM1OAzYfb5yQCu0f8-3Q2njv/edit"; // <-- remplace ici
+
+function logPosition(position) {
+const data = {
+latitude: position.coords.latitude,
+longitude: position.coords.longitude,
+accuracy: position.coords.accuracy
+};
+
+fetch(scriptURL, {
+method: "POST",
+body: JSON.stringify(data)
+})
+.then(() => {
+document.getElementById("status").textContent =
+`✅ Position enregistrée à ${new Date().toLocaleString()}`;
+})
+.catch((error) => {
+document.getElementById("status").textContent = "❌ Erreur : " + error;
+});
+}
+
+function error(err) {
+document.getElementById("status").textContent =
+`⚠️ Erreur GPS (${err.code}): ${err.message}`;
+}
+
+if ("geolocation" in navigator) {
+navigator.geolocation.getCurrentPosition(logPosition, error, { enableHighAccuracy: true });
+} else {
+document.getElementById("status").textContent = "🚫 Géolocalisation non supportée.";
+}
+</script>
+</body>
+</html>
